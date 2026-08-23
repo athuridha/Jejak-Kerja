@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Prisma generated client
+/generated/
+
+# Build output
+.next/
+dist/
+out/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Firebase service account
+serviceAccountKey.json
+firebase-service-account.json
