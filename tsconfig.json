@@ -1,17 +1,52 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "lib": ["ES2022"],
-    "strict": true,
-    "esModuleInterop": true,
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "ES2022"
+    ],
+    "allowJs": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
+    "strict": true,
     "noEmit": true,
-    "types": ["node"]
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "forceConsistentCasingInFileNames": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@/lib/*": [
+        "./lib/*"
+      ],
+      "@/generated/*": [
+        "./generated/*"
+      ]
+    }
   },
-  "include": ["lib/**/*.ts", "prisma/**/*.ts", "scripts/**/*.ts"],
-  "exclude": ["node_modules", "generated"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "lib/**/*.ts",
+    "prisma/**/*.ts",
+    "scripts/**/*.ts",
+    ".next/dev/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "generated"
+  ]
 }
