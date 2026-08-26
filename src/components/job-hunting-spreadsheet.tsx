@@ -688,7 +688,7 @@ export function JobHuntingSpreadsheet({ stats }: { stats: DashboardStats }) {
               <p>{t("no_applications_found")}</p>
             </div>
           ) : (
-            filteredApplications.slice(0, 5).map((app) => {
+            filteredApplications.slice(0, 10).map((app) => {
               const appDate = app.appliedAt
                 ? new Date(app.appliedAt).toLocaleDateString(lang === "id" ? "id-ID" : "en-US", {
                     day: "numeric",
@@ -768,7 +768,7 @@ export function JobHuntingSpreadsheet({ stats }: { stats: DashboardStats }) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
-                  {filteredApplications.map((app) => {
+                  {filteredApplications.slice(0, 10).map((app) => {
                     const appDate = app.appliedAt
                       ? new Date(app.appliedAt).toLocaleDateString(lang === "id" ? "id-ID" : "en-US", {
                           month: "short",
