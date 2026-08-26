@@ -15,29 +15,7 @@ import { ensureDefaultStatuses } from "./lib/data/statuses-default";
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   session: { strategy: "jwt" },
-  providers: [
-    ...authConfig.providers,
-    Credentials({
-      id: "dev",
-      name: "Dev sign in",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        name: { label: "Name", type: "text" },
-      },
-      async authorize(creds) {
-        const email = (creds?.email as string)?.trim().toLowerCase();
-        if (!email) return null;
-        const name = (creds?.name as string)?.trim() || email.split("@")[0];
-
-        const user = await prisma.user.upsert({
-          where: { email },
-          update: {},
-          create: { email, name },
-        });
-        return { id: user.id, email: user.email, name: user.name, image: user.image };
-      },
-    }),
-  ],
+  providers: authConfig.providers,
   callbacks: {
     ...authConfig.callbacks,
     async jwt({ token }) {
