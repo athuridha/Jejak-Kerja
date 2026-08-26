@@ -8,14 +8,23 @@ import Google from "next-auth/providers/google";
  */
 export const authConfig = {
   trustHost: true,
+  secret:
+    process.env.AUTH_SECRET ||
+    process.env.NEXTAUTH_SECRET ||
+    "jejakkerja-secure-fallback-secret-2025-token-auth",
   pages: {
     signIn: "/login",
+    error: "/login",
   },
   providers: [
-    Google({
-      clientId: process.env.AUTH_GOOGLE_ID,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET,
-    }),
+    ...(process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET
+      ? [
+          Google({
+            clientId: process.env.AUTH_GOOGLE_ID,
+            clientSecret: process.env.AUTH_GOOGLE_SECRET,
+          }),
+        ]
+      : []),
   ],
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
@@ -23,7 +32,12 @@ export const authConfig = {
       const isProtected =
         nextUrl.pathname.startsWith("/dashboard") ||
         nextUrl.pathname.startsWith("/applications") ||
-        nextUrl.pathname.startsWith("/statuses");
+        nextUrl.pathname.startsWith("/calendar") ||
+        nextUrl.pathname.startsWith("/companies") ||
+        nextUrl.pathname.startsWith("/contacts") ||
+        nextUrl.pathname.startsWith("/notes") ||
+        nextUrl.pathname.startsWith("/statistics") ||
+        nextUrl.pathname.startsWith("/settings");
 
       if (isProtected) return isLoggedIn;
 

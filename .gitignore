@@ -30,3 +30,5 @@ Thumbs.db
 # Firebase service account
 serviceAccountKey.json
 firebase-service-account.json
+
+.vercel
