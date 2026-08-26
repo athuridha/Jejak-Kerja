@@ -7,20 +7,14 @@ import { ensureDefaultStatuses } from "./lib/data/statuses-default";
 /**
  * Full Auth.js instance (Node runtime).
  */
-const googleClientId = (process.env.AUTH_GOOGLE_ID || "")
-  .replace(/^["']|["']$/g, "")
-  .trim();
-const googleClientSecret = (process.env.AUTH_GOOGLE_SECRET || "")
-  .replace(/^["']|["']$/g, "")
-  .trim();
-
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   session: { strategy: "jwt" },
   providers: [
     Google({
-      clientId: googleClientId || undefined,
-      clientSecret: googleClientSecret || undefined,
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+      checks: ["state"],
     }),
   ],
   callbacks: {
