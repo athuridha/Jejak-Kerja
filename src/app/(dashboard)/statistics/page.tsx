@@ -1,7 +1,7 @@
 import { requireDb } from "@/lib/session";
-import { JobHuntingSpreadsheet } from "@/components/job-hunting-spreadsheet";
+import { StatisticsPageClient } from "@/components/statistics-page-client";
 
-export default async function DashboardPage() {
+export default async function StatisticsPage() {
   const db = await requireDb();
   const rawStats = await db.dashboard.stats();
 
@@ -31,5 +31,5 @@ export default async function DashboardPage() {
     })),
   };
 
-  return <JobHuntingSpreadsheet stats={formattedStats} />;
+  return <StatisticsPageClient stats={formattedStats} />;
 }

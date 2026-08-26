@@ -1,7 +1,7 @@
 import { requireDb } from "@/lib/session";
-import { ApplicationsPageClient } from "@/components/applications-page-client";
+import { ContactsPageClient } from "@/components/contacts-page-client";
 
-export default async function ApplicationsPage() {
+export default async function ContactsPage() {
   const db = await requireDb();
   const rawStats = await db.dashboard.stats();
 
@@ -21,5 +21,5 @@ export default async function ApplicationsPage() {
     notes: a.notes,
   }));
 
-  return <ApplicationsPageClient applications={applications} />;
+  return <ContactsPageClient applications={applications} />;
 }

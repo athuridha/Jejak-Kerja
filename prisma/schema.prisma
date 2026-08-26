@@ -1,6 +1,5 @@
-// Prisma schema for Job Application Tracker
-// Domain model per docs/INSTRUCTIONS.md and docs/01_PRD_DOCUMENT.md
-// App-level multi-tenant isolation: every domain row is scoped by userId.
+// Prisma schema for Job Hunting Tracker Spreadsheet
+// Multi-tenant app-level isolation: every domain row is scoped by userId.
 
 generator client {
   provider = "prisma-client"
@@ -45,12 +44,16 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  targetMonthly Int       @default(20)
 
   accounts     Account[]
   sessions     Session[]
   applications Application[]
   companies    Company[]
   statuses     Status[]
+  projects     Project[]
+  tasks        Task[]
+  resources    Resource[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -66,16 +69,20 @@ model VerificationToken {
 
 // --- Domain models ---
 model Company {
-  id     String @id @default(cuid())
-  name   String
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  name      String
+  location  String?
+  website   String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   applications Application[]
+  projects     Project[]
 
   createdAt DateTime @default(now())
 
   @@unique([name, userId])
+  @@index([userId])
 }
 
 model Status {
@@ -97,28 +104,109 @@ model Status {
 }
 
 model Application {
-  id           String   @id @default(cuid())
-  position     String
-  recruiter    String?
-  email        String?
-  appliedAt    DateTime @default(now())
-  notes        String?
-  cvUrl        String?
-  portfolioUrl String?
+  id             String    @id @default(cuid())
+  companyName    String    @default("")
+  position       String
+  location       String?   @default("Jakarta")
+  platform       String    @default("Jobstreet") // Jobstreet, LinkedIn, Glints, KitaLulus, Kalibrr, Dealls, Email, Website Karir, Lainnya
+  email          String?
+  jobUrl         String?
+  appliedAt      DateTime  @default(now())
+  status         String    @default("Lamaran Dikirim") // Lamaran Dikirim, Wawancara, Offering, Diterima, Ditolak
+  
+  // Wawancara fields
+  interviewDate  DateTime?
+  interviewVia   String?   // Google Meet, Zoom, Onsite, MS Teams, WhatsApp, Telepon
+  interviewNotes String?
+
+  jobType        String?   @default("Full-time")
+  recruiter      String?
+  salary         String?
+  notes          String?
+  cvUrl          String?
+  portfolioUrl   String?
+
+  companyId      String?
+  company        Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  statusId       String?
+  statusRel      Status?   @relation(fields: [statusId], references: [id], onDelete: SetNull)
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  companyId String
-  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  statusId String
-  status   Status @relation(fields: [statusId], references: [id], onDelete: Restrict)
+  @@index([userId])
+  @@index([status])
+  @@index([platform])
+  @@index([appliedAt])
+}
+
+model Project {
+  id          String    @id @default(cuid())
+  name        String    @default("Project")
+  key         String    @default("PROJ")
+  description String?
+  startDate   DateTime?
+  dueDate     DateTime?
+  engagement  String    @default("Project")
+  status      String    @default("Planning")
+  leadName    String?
+  leadAvatar  String?
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tasks     Task[]
+  resources Resource[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@index([companyId])
-  @@index([statusId])
+}
+
+model Task {
+  id          String    @id @default(cuid())
+  title       String    @default("Task")
+  description String?
+  status      String    @default("Backlog")
+  priority    String    @default("Medium")
+  dueDate     DateTime?
+
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([projectId])
+  @@index([status])
+}
+
+model Resource {
+  id    String @id @default(cuid())
+  title String @default("Resource")
+  url   String @default("https://")
+  type  String @default("link")
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([projectId])
 }

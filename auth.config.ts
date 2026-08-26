@@ -7,6 +7,7 @@ import Google from "next-auth/providers/google";
  * provider) live in auth.ts.
  */
 export const authConfig = {
+  trustHost: true,
   pages: {
     signIn: "/login",
   },

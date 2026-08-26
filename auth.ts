@@ -40,8 +40,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     ...authConfig.callbacks,
-    async jwt({ token, user }) {
-      if (user?.id) token.id = user.id;
+    async jwt({ token }) {
+      if (token.email) {
+        const dbUser = await prisma.user.findUnique({
+          where: { email: token.email },
+          select: { id: true },
+        });
+        if (dbUser) {
+          token.id = dbUser.id;
+        }
+      }
       return token;
     },
     async session({ session, token }) {
@@ -51,12 +59,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session;
     },
     async signIn({ user }) {
-      // For OAuth (Google) the adapter would create the user; here we ensure a
-      // row exists and seed default statuses on first login.
       if (user?.email) {
         const dbUser = await prisma.user.upsert({
           where: { email: user.email },
-          update: {},
+          update: {
+            ...(user.name ? { name: user.name } : {}),
+            ...(user.image ? { image: user.image } : {}),
+          },
           create: { email: user.email, name: user.name, image: user.image },
         });
         await ensureDefaultStatuses(dbUser.id);
