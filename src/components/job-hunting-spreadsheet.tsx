@@ -20,6 +20,8 @@ import {
   FolderOpen,
   ArrowUp,
   Buildings,
+  CaretLeft,
+  CaretRight,
 } from "@phosphor-icons/react";
 import {
   updateSpreadsheetCell,
@@ -185,6 +187,8 @@ export function JobHuntingSpreadsheet({ stats }: { stats: DashboardStats }) {
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
+  const [dashPage, setDashPage] = useState(0);
+  const DASH_PER_PAGE = 5;
 
   // Sticky Note with localStorage persistence
   const [noteText, setNoteText] = useState("");
@@ -688,7 +692,7 @@ export function JobHuntingSpreadsheet({ stats }: { stats: DashboardStats }) {
               <p>{t("no_applications_found")}</p>
             </div>
           ) : (
-            filteredApplications.slice(0, 10).map((app) => {
+            filteredApplications.slice(dashPage * DASH_PER_PAGE, (dashPage + 1) * DASH_PER_PAGE).map((app) => {
               const appDate = app.appliedAt
                 ? new Date(app.appliedAt).toLocaleDateString(lang === "id" ? "id-ID" : "en-US", {
                     day: "numeric",
@@ -734,6 +738,33 @@ export function JobHuntingSpreadsheet({ stats }: { stats: DashboardStats }) {
           )}
         </div>
 
+        {/* Pagination (mobile) */}
+        {filteredApplications.length > DASH_PER_PAGE && (
+          <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800/80 md:hidden">
+            <span className="text-[11px] text-slate-400 font-medium">
+              {dashPage * DASH_PER_PAGE + 1}-{Math.min((dashPage + 1) * DASH_PER_PAGE, filteredApplications.length)} / {filteredApplications.length}
+            </span>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                disabled={dashPage === 0}
+                onClick={() => setDashPage((p) => p - 1)}
+                className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
+              >
+                <CaretLeft size={14} weight="bold" />
+              </button>
+              <button
+                type="button"
+                disabled={(dashPage + 1) * DASH_PER_PAGE >= filteredApplications.length}
+                onClick={() => setDashPage((p) => p + 1)}
+                className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
+              >
+                <CaretRight size={14} weight="bold" />
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Desktop Table View (hidden on md:hidden, visible on md:block) */}
         <div className="hidden md:block">
           {filteredApplications.length === 0 ? (
@@ -768,7 +799,7 @@ export function JobHuntingSpreadsheet({ stats }: { stats: DashboardStats }) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
-                  {filteredApplications.slice(0, 10).map((app) => {
+                  {filteredApplications.slice(dashPage * DASH_PER_PAGE, (dashPage + 1) * DASH_PER_PAGE).map((app) => {
                     const appDate = app.appliedAt
                       ? new Date(app.appliedAt).toLocaleDateString(lang === "id" ? "id-ID" : "en-US", {
                           month: "short",
@@ -871,6 +902,33 @@ export function JobHuntingSpreadsheet({ stats }: { stats: DashboardStats }) {
                 </tbody>
               </table>
             </div>
+
+            {/* Pagination (desktop) */}
+            {filteredApplications.length > DASH_PER_PAGE && (
+              <div className="flex items-center justify-between px-5 py-3 border-t border-slate-100 dark:border-slate-800/80">
+                <span className="text-[11px] text-slate-400 font-medium">
+                  {dashPage * DASH_PER_PAGE + 1}-{Math.min((dashPage + 1) * DASH_PER_PAGE, filteredApplications.length)} dari {filteredApplications.length} lamaran
+                </span>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    disabled={dashPage === 0}
+                    onClick={() => setDashPage((p) => p - 1)}
+                    className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                  >
+                    <CaretLeft size={14} weight="bold" />
+                  </button>
+                  <button
+                    type="button"
+                    disabled={(dashPage + 1) * DASH_PER_PAGE >= filteredApplications.length}
+                    onClick={() => setDashPage((p) => p + 1)}
+                    className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                  >
+                    <CaretRight size={14} weight="bold" />
+                  </button>
+                </div>
+              </div>
+            )}
           )}
         </div>
       </div>
