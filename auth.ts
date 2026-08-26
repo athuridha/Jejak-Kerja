@@ -1,21 +1,21 @@
 import NextAuth from "next-auth";
-import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
 import { authConfig } from "./auth.config";
 import { prisma } from "./lib/prisma";
 import { ensureDefaultStatuses } from "./lib/data/statuses-default";
 
 /**
  * Full Auth.js instance (Node runtime).
- *
- * Session strategy is JWT so the local "Dev sign in" Credentials provider works
- * (Credentials is incompatible with the database-session strategy). Users are
- * still persisted in Postgres via Prisma, and default statuses are seeded on
- * first sign-in. See docs/ARCHITECTURE_DECISIONS.md (ADR-2).
  */
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   session: { strategy: "jwt" },
-  providers: authConfig.providers,
+  providers: [
+    Google({
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+    }),
+  ],
   callbacks: {
     ...authConfig.callbacks,
     async jwt({ token }) {
