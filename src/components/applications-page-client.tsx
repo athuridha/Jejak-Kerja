@@ -15,8 +15,6 @@ import {
   CalendarBlank,
   VideoCamera,
   FolderOpen,
-  CaretLeft,
-  CaretRight,
 } from "@phosphor-icons/react";
 import {
   updateSpreadsheetCell,
@@ -25,6 +23,7 @@ import {
 import { useToast } from "./toast-context";
 import { ApplicationModal } from "./create-application-modal";
 import { SpreadsheetApplication } from "./job-hunting-spreadsheet";
+import { Pagination } from "./pagination";
 import { useLanguage } from "@/lib/i18n";
 
 function CompanyLogo({ name }: { name: string }) {
@@ -521,34 +520,17 @@ export function ApplicationsPageClient({
           </div>
 
           {/* Pagination */}
-          {filtered.length > APP_PER_PAGE && (
-            <div className="flex items-center justify-between px-5 py-3 border-t border-slate-100 dark:border-slate-800/80">
-              <span className="text-[11px] text-slate-400 font-medium">
-                {appPage * APP_PER_PAGE + 1}-{Math.min((appPage + 1) * APP_PER_PAGE, filtered.length)} dari {filtered.length} lamaran
-              </span>
-              <div className="flex items-center gap-1">
-                <button
-                  type="button"
-                  disabled={appPage === 0}
-                  onClick={() => setAppPage((p) => p - 1)}
-                  className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
-                >
-                  <CaretLeft size={14} weight="bold" />
-                </button>
-                <button
-                  type="button"
-                  disabled={(appPage + 1) * APP_PER_PAGE >= filtered.length}
-                  onClick={() => setAppPage((p) => p + 1)}
-                  className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
-                >
-                  <CaretRight size={14} weight="bold" />
-                </button>
-              </div>
-            </div>
-          )}
+          <Pagination
+            page={appPage}
+            pageCount={Math.ceil(filtered.length / APP_PER_PAGE)}
+            onChange={setAppPage}
+            info={`${appPage * APP_PER_PAGE + 1}-${Math.min((appPage + 1) * APP_PER_PAGE, filtered.length)} dari ${filtered.length} lamaran`}
+            className="px-5 py-3 border-t border-slate-100 dark:border-slate-800/80"
+          />
         </div>
       ) : (
         /* Grid Cards View */
+        <>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.slice(appPage * APP_PER_PAGE, (appPage + 1) * APP_PER_PAGE).map((app) => (
             <div
@@ -656,31 +638,14 @@ export function ApplicationsPageClient({
         </div>
 
         {/* Pagination (grid) */}
-        {filtered.length > APP_PER_PAGE && (
-          <div className="flex items-center justify-between rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-[#11121c] px-5 py-3 shadow-xs">
-            <span className="text-[11px] text-slate-400 font-medium">
-              {appPage * APP_PER_PAGE + 1}-{Math.min((appPage + 1) * APP_PER_PAGE, filtered.length)} dari {filtered.length} lamaran
-            </span>
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                disabled={appPage === 0}
-                onClick={() => setAppPage((p) => p - 1)}
-                className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
-              >
-                <CaretLeft size={14} weight="bold" />
-              </button>
-              <button
-                type="button"
-                disabled={(appPage + 1) * APP_PER_PAGE >= filtered.length}
-                onClick={() => setAppPage((p) => p + 1)}
-                className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
-              >
-                <CaretRight size={14} weight="bold" />
-              </button>
-            </div>
-          </div>
-        )}
+        <Pagination
+          page={appPage}
+          pageCount={Math.ceil(filtered.length / APP_PER_PAGE)}
+          onChange={setAppPage}
+          info={`${appPage * APP_PER_PAGE + 1}-${Math.min((appPage + 1) * APP_PER_PAGE, filtered.length)} dari ${filtered.length} lamaran`}
+          className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-[#11121c] px-5 py-3 shadow-xs"
+        />
+        </>
       )}
 
       {/* Form Modal */}

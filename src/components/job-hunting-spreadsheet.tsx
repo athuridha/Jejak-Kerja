@@ -20,8 +20,6 @@ import {
   FolderOpen,
   ArrowUp,
   Buildings,
-  CaretLeft,
-  CaretRight,
 } from "@phosphor-icons/react";
 import {
   updateSpreadsheetCell,
@@ -29,6 +27,7 @@ import {
 } from "@/lib/actions/spreadsheet";
 import { useToast } from "./toast-context";
 import { ApplicationModal } from "./create-application-modal";
+import { Pagination } from "./pagination";
 import { useLanguage } from "@/lib/i18n";
 
 export type SpreadsheetApplication = {
@@ -739,31 +738,13 @@ export function JobHuntingSpreadsheet({ stats }: { stats: DashboardStats }) {
         </div>
 
         {/* Pagination (mobile) */}
-        {filteredApplications.length > DASH_PER_PAGE && (
-          <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800/80 md:hidden">
-            <span className="text-[11px] text-slate-400 font-medium">
-              {dashPage * DASH_PER_PAGE + 1}-{Math.min((dashPage + 1) * DASH_PER_PAGE, filteredApplications.length)} / {filteredApplications.length}
-            </span>
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                disabled={dashPage === 0}
-                onClick={() => setDashPage((p) => p - 1)}
-                className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
-              >
-                <CaretLeft size={14} weight="bold" />
-              </button>
-              <button
-                type="button"
-                disabled={(dashPage + 1) * DASH_PER_PAGE >= filteredApplications.length}
-                onClick={() => setDashPage((p) => p + 1)}
-                className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
-              >
-                <CaretRight size={14} weight="bold" />
-              </button>
-            </div>
-          </div>
-        )}
+        <Pagination
+          page={dashPage}
+          pageCount={Math.ceil(filteredApplications.length / DASH_PER_PAGE)}
+          onChange={setDashPage}
+          info={`${dashPage * DASH_PER_PAGE + 1}-${Math.min((dashPage + 1) * DASH_PER_PAGE, filteredApplications.length)} / ${filteredApplications.length}`}
+          className="pt-3 border-t border-slate-100 dark:border-slate-800/80 md:hidden"
+        />
 
         {/* Desktop Table View (hidden on md:hidden, visible on md:block) */}
         <div className="hidden md:block">
@@ -902,34 +883,16 @@ export function JobHuntingSpreadsheet({ stats }: { stats: DashboardStats }) {
                 </tbody>
               </table>
             </div>
-
-            {/* Pagination (desktop) */}
-            {filteredApplications.length > DASH_PER_PAGE && (
-              <div className="flex items-center justify-between px-5 py-3 border-t border-slate-100 dark:border-slate-800/80">
-                <span className="text-[11px] text-slate-400 font-medium">
-                  {dashPage * DASH_PER_PAGE + 1}-{Math.min((dashPage + 1) * DASH_PER_PAGE, filteredApplications.length)} dari {filteredApplications.length} lamaran
-                </span>
-                <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    disabled={dashPage === 0}
-                    onClick={() => setDashPage((p) => p - 1)}
-                    className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
-                  >
-                    <CaretLeft size={14} weight="bold" />
-                  </button>
-                  <button
-                    type="button"
-                    disabled={(dashPage + 1) * DASH_PER_PAGE >= filteredApplications.length}
-                    onClick={() => setDashPage((p) => p + 1)}
-                    className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
-                  >
-                    <CaretRight size={14} weight="bold" />
-                  </button>
-                </div>
-              </div>
-            )}
           )}
+
+          {/* Pagination (desktop) */}
+          <Pagination
+            page={dashPage}
+            pageCount={Math.ceil(filteredApplications.length / DASH_PER_PAGE)}
+            onChange={setDashPage}
+            info={`${dashPage * DASH_PER_PAGE + 1}-${Math.min((dashPage + 1) * DASH_PER_PAGE, filteredApplications.length)} dari ${filteredApplications.length} lamaran`}
+            className="px-5 py-3 border-t border-slate-100 dark:border-slate-800/80"
+          />
         </div>
       </div>
 
